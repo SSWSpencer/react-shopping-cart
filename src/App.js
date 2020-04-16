@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { Route } from 'react-router-dom';
 import data from './data';
 
+import {ProductContext} from "./contexts/ProductContext";
+import {CartContext} from "./contexts/CartContext";
+
 // Components
 import Navigation from './components/Navigation';
 import Products from './components/Products';
@@ -12,21 +15,38 @@ function App() {
 	const [cart, setCart] = useState([]);
 
 	const addItem = item => {
-		// add the given item to the cart
+		setCart([...cart, item])
 	};
+
+	const removeItem = item => {
+		let removedItem = false;
+		for(let i = 0; i < cart.length; i++){
+			if(item === cart[i].id && !removedItem){
+				cart.splice(i, 1);
+				removedItem = true;
+			}
+		}
+		setCart([...cart])
+	}
 
 	return (
 		<div className="App">
-			<Navigation cart={cart} />
+			<CartContext.Provider value={{cart, removeItem}}>
+				<Navigation />
+			</CartContext.Provider>
 
 			{/* Routes */}
-			<Route exact path="/">
-				<Products products={products} addItem={addItem} />
-			</Route>
+			<ProductContext.Provider value={{products, addItem}}>
+				<Route exact path="/">
+					<Products />
+				</Route>
+			</ProductContext.Provider>
 
-			<Route path="/cart">
-				<ShoppingCart cart={cart} />
-			</Route>
+			<CartContext.Provider value={{cart, removeItem}}>
+				<Route path="/cart">
+					<ShoppingCart />
+				</Route>
+			</CartContext.Provider>
 		</div>
 	);
 }
