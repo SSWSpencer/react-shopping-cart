@@ -18,9 +18,20 @@ function App() {
 		setCart([...cart, item])
 	};
 
+	const removeItem = item => {
+		let removedItem = false;
+		for(let i = 0; i < cart.length; i++){
+			if(item === cart[i].id && !removedItem){
+				cart.splice(i, 1);
+				removedItem = true;
+			}
+		}
+		setCart([...cart])
+	}
+
 	return (
 		<div className="App">
-			<CartContext.Provider value={cart}>
+			<CartContext.Provider value={{cart, removeItem}}>
 				<Navigation />
 			</CartContext.Provider>
 
@@ -31,7 +42,7 @@ function App() {
 				</Route>
 			</ProductContext.Provider>
 
-			<CartContext.Provider value={cart}>
+			<CartContext.Provider value={{cart, removeItem}}>
 				<Route path="/cart">
 					<ShoppingCart />
 				</Route>
